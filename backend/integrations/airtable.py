@@ -168,5 +168,5 @@ async def get_items_airtable(credentials) -> list[IntegrationItem]:
                     )
                 )
 
-    print(f'list_of_integration_item_metadata: {list_of_integration_item_metadata}')
+    
     return list_of_integration_item_metadata

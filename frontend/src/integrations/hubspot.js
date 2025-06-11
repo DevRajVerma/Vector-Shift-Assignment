@@ -1,4 +1,4 @@
-// notion.js
+// hubspot.js
 
 import { useState, useEffect } from 'react';
 import {
@@ -8,7 +8,7 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 
-export const NotionIntegration = ({ user, org, integrationParams, setIntegrationParams }) => {
+export const HubspotIntegration = ({ user, org, integrationParams, setIntegrationParams }) => {
     const [isConnected, setIsConnected] = useState(false);
     const [isConnecting, setIsConnecting] = useState(false);
 
@@ -19,11 +19,10 @@ export const NotionIntegration = ({ user, org, integrationParams, setIntegration
             const formData = new FormData();
             formData.append('user_id', user);
             formData.append('org_id', org);
-            const response = await axios.post(`http://localhost:8000/integrations/notion/authorize`, formData);
-            
+            const response = await axios.post(`http://localhost:8000/integrations/hubspot/authorize`, formData);
             const authURL = response?.data;
 
-            const newWindow = window.open(authURL, 'Notion Authorization', 'width=600, height=600');
+            const newWindow = window.open(authURL, 'HubSpot Authorization', 'width=600, height=600');
 
             // Polling for the window to close
             const pollTimer = window.setInterval(() => {
@@ -44,14 +43,17 @@ export const NotionIntegration = ({ user, org, integrationParams, setIntegration
             const formData = new FormData();
             formData.append('user_id', user);
             formData.append('org_id', org);
-            const response = await axios.post(`http://localhost:8000/integrations/notion/credentials`, formData);
+            const response = await axios.post(`http://localhost:8000/integrations/hubspot/credentials`, formData);
             const credentials = response.data; 
             if (credentials) {
                 setIsConnecting(false);
                 setIsConnected(true);
-                setIntegrationParams(prev => ({ ...prev, credentials: credentials, type: 'Notion' }));
+                setIntegrationParams(prev => ({
+                    ...prev,
+                    type: 'HubSpot',
+                    credentials: credentials
+                }));
             }
-            setIsConnecting(false);
         } catch (e) {
             setIsConnecting(false);
             alert(e?.response?.data?.detail);
@@ -59,29 +61,25 @@ export const NotionIntegration = ({ user, org, integrationParams, setIntegration
     }
 
     useEffect(() => {
-        setIsConnected(integrationParams?.credentials ? true : false)
-    }, []);
+        setIsConnected(integrationParams?.credentials ? true : false);
+    }, [integrationParams]);
 
     return (
-        <>
-        <Box sx={{mt: 2}}>
-            Parameters
-            <Box display='flex' alignItems='center' justifyContent='center' sx={{mt: 2}}>
-                <Button 
-                    variant='contained' 
-                    onClick={isConnected ? () => {} :handleConnectClick}
-                    color={isConnected ? 'success' : 'primary'}
-                    disabled={isConnecting}
-                    style={{
-                        pointerEvents: isConnected ? 'none' : 'auto',
-                        cursor: isConnected ? 'default' : 'pointer',
-                        opacity: isConnected ? 1 : undefined
-                    }}
-                >
-                    {isConnected ? 'Notion Connected' : isConnecting ? <CircularProgress size={20} /> : 'Connect to Notion'}
-                </Button>
-            </Box>
+        <Box display='flex' justifyContent='center' alignItems='center' flexDirection='column' sx={{ width: '100%' }}>
+            <Button
+                variant='contained'
+                onClick={handleConnectClick}
+                disabled={isConnecting}
+                color={isConnected ? 'success' : 'primary'}
+                style={{
+                    pointerEvents: isConnected ? 'none' : 'auto',
+                    cursor: isConnected ? 'default' : 'pointer',
+                    opacity: isConnected ? 1 : undefined
+                }}
+                sx={{ mt: 2 }}
+            >
+                {isConnected ? 'HubSpot Connected' : isConnecting ? <CircularProgress size={24} /> : 'Connect to HubSpot'}
+            </Button>
         </Box>
-      </>
     );
-}
+}; 

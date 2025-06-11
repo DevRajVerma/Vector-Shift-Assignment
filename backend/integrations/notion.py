@@ -12,12 +12,12 @@ from integrations.integration_item import IntegrationItem
 
 from redis_client import add_key_value_redis, get_value_redis, delete_key_redis
 
-CLIENT_ID = 'XXX'
-CLIENT_SECRET = 'XXX'
+CLIENT_ID = '20fd872b-594c-80a8-96f6-003766349c41'
+CLIENT_SECRET = 'secret_vf7Uaa2qRaLJVv0C1B8uaeTXaBpassCHFhwfS1ivwf8'
 encoded_client_id_secret = base64.b64encode(f'{CLIENT_ID}:{CLIENT_SECRET}'.encode()).decode()
 
 REDIRECT_URI = 'http://localhost:8000/integrations/notion/oauth2callback'
-authorization_url = f'https://api.notion.com/v1/oauth/authorize?client_id={CLIENT_ID}&response_type=code&owner=user&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fintegrations%2Fnotion%2Foauth2callback'
+authorization_url = f'https://api.notion.com/v1/oauth/authorize?client_id={CLIENT_ID}&response_type=code&owner=user&redirect_uri={REDIRECT_URI}'
 
 async def authorize_notion(user_id, org_id):
     state_data = {
@@ -63,16 +63,46 @@ async def oauth2callback_notion(request: Request):
             delete_key_redis(f'notion_state:{org_id}:{user_id}'),
         )
 
+    if response.status_code != 200:
+        raise HTTPException(status_code=400, detail='Failed to get access token')
+
     await add_key_value_redis(f'notion_credentials:{org_id}:{user_id}', json.dumps(response.json()), expire=600)
     
-    close_window_script = """
+    success_html = """
     <html>
-        <script>
-            window.close();
-        </script>
+        <head>
+            <title>Notion Authorization Successful</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    margin: 0;
+                    background-color: #f5f5f5;
+                }
+                .message {
+                    text-align: center;
+                    padding: 20px;
+                    background-color: white;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                }
+            </style>
+        </head>
+        <body>
+            <div class="message">
+                <h2>Authorization Successful!</h2>
+                <p>You can close this window and return to the application.</p>
+            </div>
+            <script>
+                window.close();
+            </script>
+        </body>
     </html>
     """
-    return HTMLResponse(content=close_window_script)
+    return HTMLResponse(content=success_html)
 
 async def get_notion_credentials(user_id, org_id):
     credentials = await get_value_redis(f'notion_credentials:{org_id}:{user_id}')
@@ -154,5 +184,8 @@ async def get_items_notion(credentials) -> list[IntegrationItem]:
                 create_integration_item_metadata_object(result)
             )
 
-        print(list_of_integration_item_metadata)
-    return
+        
+        return list_of_integration_item_metadata
+    else:
+        
+        return [] #returns empty list on error
