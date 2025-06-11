@@ -5,3 +5,4 @@ httpx==0.25.1
 redis==5.0.1
 python-jose==3.3.0
 requests==2.31.0
+kombu==5.5.4

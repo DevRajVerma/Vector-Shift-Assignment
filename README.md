@@ -72,7 +72,7 @@ brew services start redis
    npm install
    ```
 
-## Configuration - I am currently providing my developer credentials for configuration, You can use them to run the app, but If I remove then You have to add your own credentials
+## Configuration - I am currently providing my developer credentials for configuration, You can use them to run the app, but If I remove then You have to add your own credentials, You can skip this section for now
 
 ### HubSpot Configuration
 1. Create a HubSpot developer account
