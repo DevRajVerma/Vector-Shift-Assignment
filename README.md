@@ -71,7 +71,7 @@ brew services start redis
    npm install
    ```
 
-## Configuration
+## Configuration - I am currently providing my developer credentials for configuration, You can use them to run the app, but If I remove then You have to add your own credentials
 
 ### HubSpot Configuration
 1. Create a HubSpot developer account
@@ -96,7 +96,7 @@ brew services start redis
    ```bash
    cd backend
    source venv/bin/activate  # On Windows: venv\Scripts\activate
-   uvicorn main:app --reload
+   python -m uvicorn main:app
    ```
 
 2. Start the frontend development server:
@@ -104,6 +104,7 @@ brew services start redis
    cd frontend
    npm start
    ```
+   Make Sure no other app running on `http://localhost:3000`, as backend can only be accessed using 3000
 
 3. Open your browser and navigate to `http://localhost:3000`
 
@@ -162,18 +163,10 @@ integrations_technical_assessment/
    - Verify API credentials are valid
    - Check network tab for API responses
 
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
-
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Support
 
-For support, please open an issue in the repository or contact the maintainers. 
+For support, please open an issue in the repository or contact drverma2704@gmail.com
