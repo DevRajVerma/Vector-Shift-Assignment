@@ -56,6 +56,7 @@ brew services start redis
    git clone <repository-url>
    cd integrations_technical_assessment
    ```
+   You don't have to clone anything as you get this in zip folder
 
 2. Set up the backend:
    ```bash
