@@ -54,7 +54,7 @@ brew services start redis
 1. Clone the repository:
    ```bash
    git clone <repository-url>
-   cd integrations_technical_assessment
+   cd Vector-Shift-Assignment-main
    ```
    You don't have to clone anything as you get this in zip folder
 
