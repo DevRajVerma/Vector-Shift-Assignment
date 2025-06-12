@@ -149,28 +149,10 @@ async def get_items_hubspot(credentials: str) -> List[IntegrationItem]:
             if not contacts:
                 return []
 
+            # Use create_integration_item_metadata_object to create items
             items = []
             for contact in contacts:
-                properties = contact.get('properties', {})
-                
-                # Extract properties
-                first_name = properties.get('firstname', '')
-                last_name = properties.get('lastname', '')
-                email = properties.get('email', '')
-                
-                # Create a descriptive name
-                name = f"{first_name} {last_name}".strip() or email or 'Unnamed Contact'
-                
-                # Create IntegrationItem with available fields
-                item = IntegrationItem(
-                    id=contact.get('id'),
-                    type='contact',
-                    name=name,
-                    creation_time=contact.get('createdAt'),
-                    last_modified_time=contact.get('updatedAt'),
-                    url=f"https://app.hubspot.com/contacts/{contact.get('id')}",
-                    visibility=True
-                )
+                item = await create_integration_item_metadata_object(contact)
                 items.append(item)
 
             return items
@@ -181,5 +163,28 @@ async def get_items_hubspot(credentials: str) -> List[IntegrationItem]:
         raise HubSpotError(f"Failed to fetch contacts: {str(e)}")
 
 async def create_integration_item_metadata_object(response_json):
-    # TODO
-    pass
+    """Creates an IntegrationItem object from HubSpot API response data"""
+    try:
+        # Extract properties from the response
+        properties = response_json.get('properties', {})
+        
+        # Get basic contact information
+        first_name = properties.get('firstname', '')
+        last_name = properties.get('lastname', '')
+        email = properties.get('email', '')
+        
+        # Create a descriptive name
+        name = f"{first_name} {last_name}".strip() or email or 'Unnamed Contact'
+        
+        # Create and return the IntegrationItem
+        return IntegrationItem(
+            id=response_json.get('id'),
+            type='contact',
+            name=name,
+            creation_time=response_json.get('createdAt'),
+            last_modified_time=response_json.get('updatedAt'),
+            url=f"https://app.hubspot.com/contacts/{response_json.get('id')}",
+            visibility=True
+        )
+    except Exception as e:
+        raise HubSpotError(f"Failed to create integration item metadata: {str(e)}")
